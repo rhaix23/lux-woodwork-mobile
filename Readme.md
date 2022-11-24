@@ -1,19 +1,13 @@
-# NativeBase Expo Template
+# Lux Woodwork Mobile
 
 ## Installation
 
 ```sh
-Clone the repository
-```
+git clone https://github.com/rhaix23/lux-woodwork-mobile.git
 
-```sh
-cd <folder_name>
-```
+cd lux-woodwork-mobile
 
-```sh
 npm install
-```
 
-```sh
 npm start
 ```

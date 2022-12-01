@@ -17,6 +17,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@expo/vector-icons": "^13.0.0",
     "@react-navigation/drawer": "^6.5.1",
     "@react-navigation/native": "^6.0.14",
     "@reduxjs/toolkit": "^1.9.0",

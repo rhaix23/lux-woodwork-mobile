@@ -1,11 +1,21 @@
 import { View, Text } from 'react-native';
 import React, { useState } from 'react';
-import { Box, Button } from 'native-base';
+import {
+  Box,
+  Button,
+  Icon,
+  Input,
+  PresenceTransition,
+  Pressable,
+  Stack,
+} from 'native-base';
 import { TextInput } from 'react-native';
 import styles from '../styles/loginStyles';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const Login = () => {
-  const [isMember, setIsMember] = useState(false);
+  const [isMember, setIsMember] = useState(true);
+  const [show, setShow] = useState(false);
   const [values, setValues] = useState({
     username: '',
     password: '',
@@ -14,28 +24,88 @@ const Login = () => {
 
   return (
     <Box style={styles.container}>
-      <View>
-        <TextInput
-          style={styles.inputField}
+      <Stack space={2}>
+        <Input
+          w={{
+            base: '75%',
+            md: '25%',
+          }}
+          InputLeftElement={
+            <Icon
+              as={<MaterialIcons name="person" />}
+              size={5}
+              ml="2"
+              color="muted.400"
+            />
+          }
           placeholder="Enter your username"
           onChangeText={(text) => setValues({ ...values, username: text })}
+          isRequired
         />
 
-        {isMember && (
-          <TextInput
-            style={styles.inputField}
-            placeholder="Enter your email"
-            onChangeText={(text) => setValues({ ...values, email: text })}
-          />
-        )}
+        <PresenceTransition
+          visible={!isMember}
+          initial={{
+            opacity: 0,
+          }}
+          animate={{
+            opacity: 1,
+            transition: {
+              duration: 250,
+            },
+          }}
+          exit={{
+            opacity: 0,
+            transition: {
+              duration: 250,
+            },
+          }}
+          style={{
+            width: '100%',
+          }}
+        >
+          {!isMember && (
+            <Input
+              w={{
+                base: '75%',
+                md: '25%',
+              }}
+              InputLeftElement={
+                <Icon
+                  as={<MaterialIcons name="mail" />}
+                  size={5}
+                  ml="2"
+                  color="muted.400"
+                />
+              }
+              placeholder="Enter your email"
+              onChangeText={(text) => setValues({ ...values, email: text })}
+              isRequired={!isMember}
+            />
+          )}
+        </PresenceTransition>
 
-        <TextInput
-          passwordRules={
-            'required: lower; required: upper; required: digit; required: [-]; minlength: 8;'
+        <Input
+          w={{
+            base: '75%',
+            md: '25%',
+          }}
+          type={show ? 'text' : 'password'}
+          InputRightElement={
+            <Pressable onPress={() => setShow(!show)}>
+              <Icon
+                as={
+                  <MaterialIcons
+                    name={show ? 'visibility' : 'visibility-off'}
+                  />
+                }
+                size={5}
+                mr="2"
+                color="muted.400"
+              />
+            </Pressable>
           }
-          secureTextEntry
-          style={styles.inputField}
-          placeholder="Enter your Password"
+          placeholder="Password"
           onChangeText={(text) => setValues({ ...values, password: text })}
         />
 
@@ -45,17 +115,17 @@ const Login = () => {
           colorScheme="secondary"
         >
           <Text style={styles.buttonText}>
-            {isMember ? 'Sign Up' : 'Login'}
+            {!isMember ? 'Sign Up' : 'Login'}
           </Text>
         </Button>
-      </View>
+      </Stack>
 
-      {!isMember ? (
+      {isMember ? (
         <View style={styles.signup}>
           <Text style={styles.signUpText}>Don't have an account?</Text>
           <Button
             style={styles.signUpButton}
-            onPress={() => setIsMember(true)}
+            onPress={() => setIsMember(!isMember)}
             colorScheme="secondary"
           >
             <Text style={styles.signUpButtonText}>Sign Up</Text>
@@ -66,7 +136,7 @@ const Login = () => {
           <Text style={styles.signUpText}>Already have an account?</Text>
           <Button
             style={styles.signUpButton}
-            onPress={() => setIsMember(false)}
+            onPress={() => setIsMember(!isMember)}
             colorScheme="secondary"
           >
             <Text style={styles.signUpButtonText}>Login</Text>

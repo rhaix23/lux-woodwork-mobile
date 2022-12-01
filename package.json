@@ -18,8 +18,10 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
+    "@react-navigation/bottom-tabs": "^6.4.3",
     "@react-navigation/drawer": "^6.5.1",
     "@react-navigation/native": "^6.0.14",
+    "@react-navigation/native-stack": "^6.9.4",
     "@reduxjs/toolkit": "^1.9.0",
     "axios": "^1.2.0",
     "expo": "^45.0.0",

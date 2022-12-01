@@ -10,6 +10,7 @@ import {
   Input,
   Pressable,
   ScrollView,
+  Select,
   Text,
   View,
 } from "native-base";
@@ -19,30 +20,27 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import categories from "../utils/categories";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAllProducts,
   setCategoryFilter,
   setFreeShippingFilter,
   setSearchFilter,
+  setSort,
 } from "../features/products/productsSlice";
 import { formatPrice } from "../utils/formatPrice";
+import Loader from "../components/Loader";
 
 const windowWidth = Dimensions.get("window").width;
 
 const listHeaderComponent = () => {
   const dispatch = useDispatch();
-  const { searchFilter, categoryFilter, freeShippingFilter } = useSelector(
-    (state) => state.products
-  );
-
-  console.log("search: " + searchFilter);
-  console.log("category: " + categoryFilter);
-  console.log("freeShipping: " + freeShippingFilter);
+  const { searchFilter, categoryFilter, freeShippingFilter, sort } =
+    useSelector((state) => state.products);
 
   return (
-    <View px="1" pt="2">
+    <View px="1">
       <Box mb="2">
         <Input
           InputLeftElement={
@@ -60,26 +58,27 @@ const listHeaderComponent = () => {
         />
       </Box>
       <Flex mb="2" direction="row" justifyContent="space-between">
-        <Button
-          variant="outline"
-          marginRight="2"
-          flex="1"
-          leftIcon={
-            <Icon as={FontAwesome} name="sort" size="sm" color="gray.400" />
-          }
+        <Select
+          selectedValue={sort}
+          minWidth="200"
+          accessibilityLabel="Choose Service"
+          placeholder="Choose Service"
+          _selectedItem={{
+            bg: "teal.600",
+          }}
+          onValueChange={(itemValue) => dispatch(setSort(itemValue))}
         >
-          <Text>Alphabet</Text>
-        </Button>
-        <Button
-          variant="outline"
-          marginRight="2"
-          flex="1"
-          leftIcon={
-            <Icon as={FontAwesome} name="sort" size="sm" color="gray.400" />
-          }
-        >
-          <Text>Price</Text>
-        </Button>
+          <Select.Item label="Price: Low to High" value="Price: Low to High" />
+          <Select.Item label="Price: High to Low" value="Price: High to Low" />
+          <Select.Item
+            label="Alphabetically: A to Z"
+            value="Alphabetically: A to Z"
+          />
+          <Select.Item
+            label="Alphabetically: Z to A"
+            value="Alphabetically: Z to A"
+          />
+        </Select>
         <Button
           colorScheme={freeShippingFilter ? "success" : "info"}
           variant={freeShippingFilter ? "solid" : "outline"}
@@ -122,12 +121,17 @@ const listHeaderComponent = () => {
   );
 };
 
-const Products = () => {
+const Products = ({ navigation }) => {
   const dispatch = useDispatch();
 
-  const { products, freeShippingFilter, categoryFilter, loading } = useSelector(
-    (state) => state.products
-  );
+  const {
+    products,
+    searchFilter,
+    freeShippingFilter,
+    categoryFilter,
+    loading,
+    sort,
+  } = useSelector((state) => state.products);
 
   const [filteredProducts, setFilteredProducts] = useState([]);
 
@@ -136,7 +140,9 @@ const Products = () => {
   }, []);
 
   useEffect(() => {
-    let filteredProducts = products.filter(
+    let filteredProducts = products;
+
+    filteredProducts = products.filter(
       (product) => !product.isDeleted && !product.isArchived
     );
 
@@ -150,11 +156,37 @@ const Products = () => {
       );
     }
 
+    filteredProducts = filteredProducts.filter((product) =>
+      product.name.toLowerCase().includes(searchFilter.toLowerCase())
+    );
+
+    switch (sort) {
+      case "Price: High to Low": {
+        filteredProducts = filteredProducts.sort((a, b) => b.price - a.price);
+        break;
+      }
+      case "Alphabetically: A to Z": {
+        filteredProducts = [...filteredProducts].sort((a, b) =>
+          a.name > b.name ? 1 : -1
+        );
+        break;
+      }
+      case "Alphabetically: Z to A": {
+        filteredProducts = [...filteredProducts].sort((a, b) =>
+          a.name > b.name ? -1 : 1
+        );
+        break;
+      }
+      default: {
+        filteredProducts = filteredProducts.sort((a, b) => a.price - b.price);
+      }
+    }
+
     setFilteredProducts(filteredProducts);
-  }, [products, freeShippingFilter, categoryFilter]);
+  }, [products, freeShippingFilter, categoryFilter, searchFilter, sort]);
 
   if (loading) {
-    return <Text>Loading...</Text>;
+    return <Loader />;
   }
 
   return (
@@ -168,7 +200,9 @@ const Products = () => {
           bg="white"
           mx="1"
           my="2"
-          onPress={() => console.log("hello")}
+          onPress={() =>
+            navigation.navigate("Product", { productId: item._id })
+          }
         >
           <Box position="relative">
             <Image

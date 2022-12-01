@@ -1,9 +1,12 @@
-import { Image, View, Text, Button } from 'react-native';
-import React, { useEffect, useRef } from 'react';
-import { Box, Container } from 'native-base';
-import { ImageBackground } from 'react-native';
-import { Animated } from 'react-native';
-import styles from '../styles/homeStyles';
+import { Image, View, Text, Button } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { Box, Container } from "native-base";
+import { ImageBackground } from "react-native";
+import { Animated } from "react-native";
+import styles from "../styles/homeStyles";
+import { useDispatch, useSelector } from "react-redux";
+import { getUser } from "../features/users/userSlice";
+import { Loader } from "../components";
 
 const FadeInView = (props) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -34,7 +37,7 @@ const Home = ({ navigation }) => {
       <View>
         <ImageBackground
           source={{
-            uri: 'https://res.cloudinary.com/teascript/image/upload/v1663866947/Lux-Woodwork/steph-wilson-G4fICun7Q48-unsplash_f2equq.jpg',
+            uri: "https://res.cloudinary.com/teascript/image/upload/v1663866947/Lux-Woodwork/steph-wilson-G4fICun7Q48-unsplash_f2equq.jpg",
           }}
           style={styles.hero}
         >
@@ -45,7 +48,7 @@ const Home = ({ navigation }) => {
               <Button
                 style={styles.button}
                 title="Shop Now"
-                onPress={() => navigation.navigate('Products')}
+                onPress={() => navigation.navigate("Products List")}
               />
             </View>
           </FadeInView>

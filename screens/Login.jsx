@@ -1,5 +1,5 @@
-import { View, Text } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text } from "react-native";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -8,27 +8,38 @@ import {
   PresenceTransition,
   Pressable,
   Stack,
-} from 'native-base';
-import { TextInput } from 'react-native';
-import styles from '../styles/loginStyles';
-import { MaterialIcons } from '@expo/vector-icons';
+} from "native-base";
+import styles from "../styles/loginStyles";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../features/users/userSlice";
 
-const Login = () => {
+const Login = ({ navigation }) => {
+  const dispatch = useDispatch();
   const [isMember, setIsMember] = useState(true);
   const [show, setShow] = useState(false);
   const [values, setValues] = useState({
-    username: '',
-    password: '',
-    email: '',
+    username: "",
+    password: "",
+    email: "",
   });
+
+  const handleSubmit = async () => {
+    if (isMember) {
+      dispatch(
+        loginUser({ username: values.username, password: values.password })
+      );
+      navigation.navigate("Home");
+    }
+  };
 
   return (
     <Box style={styles.container}>
       <Stack space={2}>
         <Input
           w={{
-            base: '75%',
-            md: '25%',
+            base: "75%",
+            md: "25%",
           }}
           InputLeftElement={
             <Icon
@@ -61,14 +72,14 @@ const Login = () => {
             },
           }}
           style={{
-            width: '100%',
+            width: "100%",
           }}
         >
           {!isMember && (
             <Input
               w={{
-                base: '75%',
-                md: '25%',
+                base: "75%",
+                md: "25%",
               }}
               InputLeftElement={
                 <Icon
@@ -87,16 +98,16 @@ const Login = () => {
 
         <Input
           w={{
-            base: '75%',
-            md: '25%',
+            base: "75%",
+            md: "25%",
           }}
-          type={show ? 'text' : 'password'}
+          type={show ? "text" : "password"}
           InputRightElement={
             <Pressable onPress={() => setShow(!show)}>
               <Icon
                 as={
                   <MaterialIcons
-                    name={show ? 'visibility' : 'visibility-off'}
+                    name={show ? "visibility" : "visibility-off"}
                   />
                 }
                 size={5}
@@ -111,11 +122,11 @@ const Login = () => {
 
         <Button
           style={styles.button}
-          onPress={() => console.log('hello world')}
+          onPress={handleSubmit}
           colorScheme="secondary"
         >
           <Text style={styles.buttonText}>
-            {!isMember ? 'Sign Up' : 'Login'}
+            {!isMember ? "Sign Up" : "Login"}
           </Text>
         </Button>
       </Stack>
